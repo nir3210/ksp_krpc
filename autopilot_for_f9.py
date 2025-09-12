@@ -45,10 +45,6 @@ def launch_sequence():
             print(pitch)
         time.sleep(0.02)
 
-
-
-
-
 def main():
     global conn, vessel
     conn = krpc.connect(
