@@ -27,7 +27,7 @@ def main():
 
 
     vessel = conn.space_center.active_vessel
-    vessel.name = "Ghidorah 9 - Crew Rodan"
+#    vessel.name = "Ghidorah 9 - Crew Rodan"
 
     flight = vessel.flight(vessel.orbit.body.reference_frame)
     orbit = vessel.orbit
@@ -38,7 +38,7 @@ def main():
         flight_perms = get_tel(vessel, flight, orbit, control)
         print(f"VS: {flight_perms['vs']:.2f}m/s, speed: {flight_perms['speed']:.2f}m/s, altitude: {flight_perms['altitude']:.2f}m, twr: {flight_perms['twr']:.2f}")
         print(f"mach: {flight_perms['mach']:.2f}, thr: {flight_perms['thr']:.2f}")
-        time.sleep(0.05)
+        time.sleep(0.2)
 
 
 if __name__ == '__main__':
