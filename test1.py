@@ -1,16 +1,23 @@
 import time
-from tkinter import ttk
-import tkinter as tk
+#from tkinter import ttk
+#import tkinter as tk
 
 import krpc
+
+def get_tel(vessel, flight, orbit):
+
+
+    vs = flight.vertical_speed
+    speed = flight.speed
+    altitude = flight.mean_altitude
+
+    return {
+        "vs":vs,
+        "speed":speed,
+        "altitude":altitude
+    }
+
 def main():
-    global conn, vessel, root
-
-
-    root = tk.Tk()
-    root.title("ksp tel")
-
-
     conn = krpc.connect(
         name='test',
         address = '127.0.0.1',
@@ -19,13 +26,16 @@ def main():
 
     vessel = conn.space_center.active_vessel
     vessel.name = "Ghidorah 9 - Crew Rodan"
+
+    flight = vessel.flight(vessel.orbit.body.reference_frame)
+    orbit = vessel.orbit
+
+
     while True:
-        flight_info = vessel.flight()
-        print(flight_info.mean_altitude)
-        print(flight_info.pitch)
+        flight_perms = get_tel(vessel, flight, orbit)
+        print(f"VS: {flight_perms['vs']:.2f}m/s, speed: {flight_perms['speed']:.2f}m/s, altitude: {flight_perms['altitude']:.2f}m")
         time.sleep(0.02)
 
-    root.mainloop()
 
 if __name__ == '__main__':
     main()
