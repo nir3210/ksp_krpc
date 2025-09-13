@@ -1,1 +1,1 @@
-i know its bad
+i know that my code is bad
