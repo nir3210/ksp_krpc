@@ -6,8 +6,8 @@ import time
 conn = None
 vessel = None
 
-first_stage_cut_off_apo = 63000
-first_stage_pitch_end = 36
+first_stage_cut_off_apo = 67000
+first_stage_pitch_end = 45
 second_stage_pitch_end = -15
 final_orbit_altitude = 160000
 
@@ -16,8 +16,8 @@ final_orbit_altitude = 160000
 
 
 def create_circularization_node():
-    global  conn, vessel, orbit
-
+    global  conn, vessel
+    orbit = vessel.orbit
     mu = orbit.body.gravitational_parameter
     r = orbit.apoapsis
     a1 = orbit.semi_major_axis
@@ -32,7 +32,9 @@ def create_circularization_node():
     return node, delta_v
 
 def circularize(node, delta_v):
-    global conn, vessel
+    global vessel, conn
+    orbit = vessel.orbit
+    control = vessel.control
     f = vessel.available_thrust
     m0 = vessel.mass
     isp = vessel.specific_impulse
@@ -56,9 +58,11 @@ def circularize(node, delta_v):
     while True:
         direction = vessel.flight(vessel.orbit.body.reference_frame).pitch
         target_dir = vessel.auto_pilot.target_pitch
-        if math.sqrt((direction - target_dir )^2) < 2:
+        print(direction, target_dir)
+        if abs(direction - target_dir) < 2:
             break
         time.sleep(0.1)
+
 
     burn_start_time = node.ut - (burn_time / 2)
     while conn.space_center.ut < burn_start_time:
@@ -116,7 +120,7 @@ def launch_sequence():
 
 
         if alt > 600 and apo < first_stage_cut_off_apo and stage_of_flight == 1:
-            frac = (apo / first_stage_cut_off_apo) * 1.85
+            frac = (apo / first_stage_cut_off_apo) * 1.8
             pitch = 90 - frac * (90 - first_stage_pitch_end)
             pitch = max(pitch, first_stage_pitch_end)
             vessel.auto_pilot.target_pitch_and_heading(pitch , 90)
@@ -157,7 +161,7 @@ def launch_sequence():
                 time.sleep(0.5)
             stage_of_flight = 5
 
-        if stage_of_flight == 4 and (pre > (final_orbit_altitude - 2000) or apo > final_orbit_altitude - 2000):
+        if stage_of_flight == 4 and (pre > (final_orbit_altitude - 4000) or apo > final_orbit_altitude - 4000):
             control.throttle = 0.01
             stage_of_flight = 5
 
@@ -166,6 +170,7 @@ def launch_sequence():
             stage_of_flight = 6
 
         if stage_of_flight == 6:
+            time.sleep(0.3)
             node, dv = create_circularization_node()
             circularize(node, dv)
 
