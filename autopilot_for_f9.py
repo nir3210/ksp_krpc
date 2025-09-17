@@ -173,6 +173,7 @@ def launch_sequence():
             time.sleep(0.3)
             node, dv = create_circularization_node()
             circularize(node, dv)
+            break
 
 
 
